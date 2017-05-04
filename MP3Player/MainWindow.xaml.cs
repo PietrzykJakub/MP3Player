@@ -21,155 +21,86 @@ namespace MP3Player
 {
     public partial class MainWindow : Window
     {
-        IWavePlayer waveOutDevice;
-        AudioFileReader audioFileReader;
-        float previousValue;
-        bool mute = false;
-        bool paused = false;
-        String[] paths;
-        int currentId;
-        String directory;
-        int numberOfSongs;
+
+        Library[] library;
+        int number;
+        Player player;
+        ShowInfo showInfo;
         public MainWindow()
         {
-            waveOutDevice = new WaveOut();
-            paths = new String[100];
-
+       
+            number = 0;
+            library = new Library[100];
+            player = new Player();
             InitializeComponent();
-            currentId = 0;
-            
+            showInfo = new ShowInfo(library,this);
 
         }
 
-        public void update()
-        {
-            if (audioFileReader.Position != null)
-                while (true)
-                {                
-                    progressBar.Dispatcher.Invoke(() => progressBar.Value = audioFileReader.Position, DispatcherPriority.Background);
-                    progresLabel.Dispatcher.Invoke(() => progresLabel.Content = audioFileReader.CurrentTime.Minutes + " : " + audioFileReader.CurrentTime.Seconds, DispatcherPriority.Background);
-                    volumeLabel.Content = (int)(waveOutDevice.Volume * 100);
-                    if (currentId == 0)
-                        previousButton.IsEnabled = false;
-                    else
-                        previousButton.IsEnabled = true;
-
-                    if(currentId == numberOfSongs-1)
-                        nextButton.IsEnabled = false;
-                    else
-                        nextButton.IsEnabled = true;
-                }                 
-        }
         private void play_Click(object sender, RoutedEventArgs e)
         {
-            play(paths[0]);
+            player.play(library[0],this);
         }
 
         private void load_Click(object sender, RoutedEventArgs e)
         {
-            directory = destinationText.Text;
-            DirectoryInfo dirInfo = new DirectoryInfo(directory);
-            FileInfo[] files = dirInfo.GetFiles("*.*", SearchOption.AllDirectories);
-            foreach (FileInfo f in files)
-            {
-                if (f.Extension == ".mp3")
-                {
-                    paths[numberOfSongs++] = f.FullName;
-                }
-            }
-        }
 
+            library[0] = new Library(destinationText.Text);
+            showInfo.setActualSongInfo(library[number], this);
+            showInfo.setSongsInfo(library[number], this);
+        }
+        
         private void stop_Click(object sender, RoutedEventArgs e)
         {
-            stop();       
+            player.stop(this);       
         }
 
-        public void stop()
-        {
-            stopButton.IsEnabled = false;
-            playButton.IsEnabled = true;
-            waveOutDevice.Stop();
-            audioFileReader.Dispose();
-            audioFileReader = null;
-            muteButton.IsEnabled = false;
-        }
         private void volume_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            waveOutDevice.Volume = (float)(volume.Value / 10);
-            mute = false;
+            player.volumeChange(this);
         }
 
         private void mute_Click(object sender, RoutedEventArgs e)
         {
-            if (!mute)
-            {
-                previousValue = (float)volume.Value;
-                volume.Value = 0;
-                mute = true;
-                muteButton.Content = "Unmute";
-            }
-            else
-            {
-                volume.Value = previousValue;
-                mute = false;
-                muteButton.Content = "Mute";
-            }
+            player.mute(this);
         }
 
         private void pause_Click(object sender, RoutedEventArgs e)
         {
-            if (!paused)
-            {
-                waveOutDevice.Pause();
-                paused = true;
-                pauseButton.Content = "Resume";
-            }                
-            else{
-                waveOutDevice.Play();
-                paused = false;
-                pauseButton.Content = "Pause";
-            }
+            player.pause(this);
                 
         }
 
         private void progressBar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            audioFileReader.Position = (long)progressBar.Value;            
+            player.progressBarChange(this);
+            showInfo.setActualSongInfo(library[number], this);
         }
 
 
         private void next_Click(object sender, RoutedEventArgs e)
         {
-            stop();
-            play(paths[++currentId]);
-        }
+            player.stop(this);
+            library[0].setCurrentId(library[0].getCurrentId() + 1);
+            player.play(library[0],this);
 
-        public void play(String path)
-        {
-            stopButton.IsEnabled = true;
-            playButton.IsEnabled = false;
-            waveOutDevice.Volume = (float)(volume.Value / 10);
-            audioFileReader = new AudioFileReader(path);
-            waveOutDevice.Init(audioFileReader);
-            waveOutDevice.Play();
-            pauseButton.IsEnabled = true;
-            progressBar.Maximum = audioFileReader.Length;
-            //label1.Content = audioFileReader.TotalTime;
-            update();
+
         }
 
         private void previous_Click(object sender, RoutedEventArgs e)
         {            
-            if(currentId > 0)
+            if(library[0].getCurrentId() > 0)
             {                
-                stop();
-                play(paths[--currentId]);
-            }                
-        }
+                player.stop(this);
+                library[0].setCurrentId(library[0].getCurrentId() - 1);
+                player.play(library[0],this);
+            }
 
-        private void progressBar_ValueChanged_1(object sender, RoutedPropertyChangedEventArgs<double> e)
+        }
+        private void destinationText_TextChanged(object sender, TextChangedEventArgs e)
         {
 
         }
+
     }
 }
