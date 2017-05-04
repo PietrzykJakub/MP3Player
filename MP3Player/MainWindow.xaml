@@ -8,8 +8,8 @@
         Title="MainWindow" Height="auto" Width="auto">
     <Grid x:Name="container">
         <Grid.RowDefinitions>
-            <RowDefinition Height="257*" MinHeight=" 150"/>
-            <RowDefinition Height="47*"/>
+            <RowDefinition Height="100*" MinHeight=" 100"/>
+            <RowDefinition Height="20*"/>
             <RowDefinition Height="50*" MinHeight="25" MaxHeight="50"/>
             <RowDefinition Height="100*" MinHeight="25" MaxHeight="100"/>
             <RowDefinition Height="50*" MinHeight="25" MaxHeight="50"/>
@@ -22,23 +22,24 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"  MinWidth=" 150"/>
 
         </Grid.ColumnDefinitions>
 
-    
-            <ListView x:Name="songs" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="4" Grid.RowSpan="1" Margin="10,10,10,10">
-                <ListView.View>
-                    <GridView>
-                    <GridViewColumn Header="Title" Width="auto" DisplayMemberBinding="{Binding Title}" />
-                    <GridViewColumn Header="Album" Width="auto" DisplayMemberBinding="{Binding Album}" />
-                    <GridViewColumn Header="Artist" Width="auto" DisplayMemberBinding="{Binding Artist}" />
-                    <GridViewColumn Header="Year" Width="auto" DisplayMemberBinding="{Binding Year}" />
-                </GridView>
-                </ListView.View>
-            </ListView>
 
- 
+        <ListView x:Name="songs" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="4" Grid.RowSpan="1" Margin="10,10,10,10" SelectionChanged="songs_SelectionChanged">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Title" Width="auto" DisplayMemberBinding="{Binding title}" />
+                    <GridViewColumn Header="Album" Width="auto" DisplayMemberBinding="{Binding album}" />
+                    <GridViewColumn Header="Artist" Width="auto" DisplayMemberBinding="{Binding artist}" />
+                    <GridViewColumn Header="Year" Width="auto" DisplayMemberBinding="{Binding year}" />
+                    <GridViewColumn Header="Time" Width="auto" DisplayMemberBinding="{Binding time}" />
+                </GridView>
+            </ListView.View>
+        </ListView>
+
+
         <Label x:Name="song" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="7" FontSize="18" Padding="8" />
 
         <Image x:Name="cover"  Grid.Row="0" Grid.Column="5" Grid.ColumnSpan="2" Grid.RowSpan="1" VerticalAlignment="Bottom" Margin="10,10,10,10" />
@@ -52,9 +53,9 @@
 
 
         <TextBox x:Name="destinationText" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="7" Text="D:\Muzyka\MusicBee\Caliban\Caliban - 2016 - Gravity (Deluxe Edition)" VerticalAlignment="Center" TextChanged="destinationText_TextChanged" Margin="10,16" />
-        <Slider x:Name="progressBar" Grid.Column="0" Grid.ColumnSpan="6"  Grid.Row="2" Margin="10,5,10,5" ValueChanged="progressBar_ValueChanged"  />
-        <Slider x:Name ="volume"  Grid.Column="7"  Grid.Row="2" Margin="5,5,5,5" Value="10" ValueChanged="volume_ValueChanged"/>
-        <Label x:Name="volumeLabel" Content="VolumeLabel" Grid.Column="7"  Margin="5,0,5,5" Grid.Row="2" VerticalAlignment="Bottom" HorizontalAlignment="Center"/>
+        <Slider x:Name="progressBar" Grid.Column="0" Grid.ColumnSpan="6"  Grid.Row="2" Margin="10,5,10,5" ValueChanged="progressBar_ValueChanged" IsMoveToPointEnabled="True"/>
+        <Slider x:Name ="volume"  Grid.Column="7"  Grid.Row="2" Margin="5,5,5,5" Value="10" ValueChanged="volume_ValueChanged" IsMoveToPointEnabled="True"/>
+        <Label x:Name="volumeLabel" Content="VolumeLabel" Grid.Column="6"  Margin="0,0,36,5" Grid.Row="2" VerticalAlignment="Bottom" HorizontalAlignment="Right"/>
         <Label x:Name="progresLabel" Content="ProgresLabel" Grid.Column="0" Grid.ColumnSpan="2" Margin="45,0,45,5" Grid.Row="2" VerticalAlignment="Bottom" HorizontalAlignment="Center"/>
     </Grid>
 

@@ -8,20 +8,23 @@ namespace MP3Player
 {
     class SongInfo
     {
-        public string Title { get; set; }
+        public string title { get; set; }
 
-        public string Album { get; set; }
+        public string album { get; set; }
 
-        public string Artist { get; set; }
+        public string artist { get; set; }
 
-        public string Year { get; set; }
+        public string year { get; set; }
 
-        public SongInfo(String Title, String Album, String Artist, String Year)
+        public string time { get; set; }
+
+        public SongInfo(String title, String album, String artist, String year, String time)
         {
-            this.Title = Title;
-            this.Album = Album;
-            this.Artist = Artist;
-            this.Year = Year;
+            this.title = title;
+            this.album = album;
+            this.artist = artist;
+            this.year = year;
+            this.time = time;
 
         }
 

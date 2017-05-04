@@ -16,6 +16,7 @@ namespace MP3Player
         private AudioFileReader audioFileReader;
         private bool muted;
         private bool paused;
+        private bool isFirstPlayed;
         float previousValue;
 
         public Player()
@@ -23,6 +24,7 @@ namespace MP3Player
             waveOutDevice = new WaveOut();
             paused = false;
             muted = false;
+            isFirstPlayed = false;
         }
         public void play(Library library, MainWindow mainWindow)
         {
@@ -36,6 +38,8 @@ namespace MP3Player
             mainWindow.pauseButton.Content = "Pause";
             mainWindow.progressBar.Maximum = audioFileReader.Length;
             mainWindow.muteButton.IsEnabled = true;
+            isFirstPlayed = true;
+            mainWindow.songs.SelectedIndex = library.getCurrentId();
             update(library, mainWindow);
 
         }
@@ -47,15 +51,31 @@ namespace MP3Player
             audioFileReader.Dispose();
             audioFileReader = null;
             mainWindow.muteButton.IsEnabled = false;
+
         }
         public void update(Library library, MainWindow mainWindow)
         {
             while (true)
             {
+                if (audioFileReader.TotalTime.TotalSeconds <= audioFileReader.CurrentTime.TotalSeconds)
+                {
+                    Console.WriteLine(audioFileReader.TotalTime.TotalSeconds);
+                    mainWindow.progressBar.Value = 1;
+                    library.setCurrentId(library.getCurrentId() + 1);
+                    stop(mainWindow);
+                    break;
+                }
                 try
                 {
+
                     mainWindow.progressBar.Dispatcher.Invoke(() => mainWindow.progressBar.Value = audioFileReader.Position, DispatcherPriority.Background);
-                    mainWindow.progresLabel.Dispatcher.Invoke(() => mainWindow.progresLabel.Content = audioFileReader.CurrentTime.Minutes + " : " + audioFileReader.CurrentTime.Seconds, DispatcherPriority.Background);
+                    String time;
+                    if (audioFileReader.CurrentTime.Seconds < 10)
+                        time = audioFileReader.CurrentTime.Minutes + " : 0" + audioFileReader.CurrentTime.Seconds;
+                    else
+                        time = audioFileReader.CurrentTime.Minutes + " : " + audioFileReader.CurrentTime.Seconds;
+
+                    mainWindow.progresLabel.Dispatcher.Invoke(() => mainWindow.progresLabel.Content = time, DispatcherPriority.Background);
                 }
                 catch (NullReferenceException e)
                 {
@@ -72,6 +92,7 @@ namespace MP3Player
                 else
                     mainWindow.nextButton.IsEnabled = true;
             }
+            play(library, mainWindow);
         }
         public void setVolume(float volume)
         {
@@ -79,6 +100,7 @@ namespace MP3Player
         }
         public void pause(MainWindow mainWindow)
         {
+
             if (!paused)
             {
                 waveOutDevice.Pause();
@@ -115,8 +137,16 @@ namespace MP3Player
             muted = false;
             mainWindow.muteButton.Content = "Mute";
         }
-        public void progressBarChange(MainWindow mainWindow)
+        public void progressBarChange(MainWindow mainWindow, Library library)
         {
+            if(paused)
+            {
+                pause(mainWindow);
+            }
+            if(!isFirstPlayed)
+            {
+                play(library, mainWindow);
+            }
             audioFileReader.Position = (long) mainWindow.progressBar.Value;
         }
     }

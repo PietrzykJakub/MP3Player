@@ -23,13 +23,12 @@ namespace MP3Player
     {
 
         Library[] library;
-        int number;
         Player player;
         ShowInfo showInfo;
         public MainWindow()
         {
        
-            number = 0;
+
             library = new Library[100];
             player = new Player();
             InitializeComponent();
@@ -46,8 +45,8 @@ namespace MP3Player
         {
 
             library[0] = new Library(destinationText.Text);
-            showInfo.setActualSongInfo(library[number], this);
-            showInfo.setSongsInfo(library[number], this);
+            showInfo.setActualSongInfo(library[0], this);
+            showInfo.setSongsInfo(library[0], this);
         }
         
         private void stop_Click(object sender, RoutedEventArgs e)
@@ -73,9 +72,10 @@ namespace MP3Player
 
         private void progressBar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            player.progressBarChange(this);
-            showInfo.setActualSongInfo(library[number], this);
+            player.progressBarChange(this, library[0]);
+            showInfo.setActualSongInfo(library[0], this);
         }
+
 
 
         private void next_Click(object sender, RoutedEventArgs e)
@@ -100,6 +100,15 @@ namespace MP3Player
         private void destinationText_TextChanged(object sender, TextChangedEventArgs e)
         {
 
+        }
+
+        private void songs_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+            player.stop(this);
+            library[0].setCurrentId(songs.SelectedIndex);
+            player.play(library[0], this);
+            
         }
 
     }
