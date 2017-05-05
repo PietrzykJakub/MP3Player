@@ -4,29 +4,31 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Collections;
 
 namespace MP3Player
 {
     public class Library
     {
-        private String[] paths;
+        public String name { get; set; }
+        private List<SongInfo> songs;
         private String directory;
-        private int currentId;
-        private int amountOfItems;
+        private  int currentId;
+        public int amountOfItems { get; set; }
 
-        public Library(String directory)
+        public Library(String  name)
         {
-            paths = new String[100];
+            this.name = name;
+            songs = new List<SongInfo>();
             currentId = 0;
             amountOfItems = 0;
-            this.directory = directory;
-            load();
         }
-        public String[] getPaths()
+
+        public List<SongInfo> getSongs()
         {
-            return paths;
+            return songs;
         }
-        private void load()
+        public void load(String directory)
         {
             DirectoryInfo dirInfo = new DirectoryInfo(directory);
             FileInfo[] files = dirInfo.GetFiles("*.*", SearchOption.AllDirectories);
@@ -34,9 +36,11 @@ namespace MP3Player
             {
                 if (f.Extension == ".mp3")
                 {
-                    paths[amountOfItems++] = f.FullName;
+                    songs.Add(new SongInfo(f.FullName));
+                    amountOfItems++;
                 }
             }
+            currentId = 0;
         }
         public int getCurrentId()
         {
@@ -50,12 +54,9 @@ namespace MP3Player
 
         public void setCurrentId(int currentId)
         {
+            Console.Write("set:" + currentId);
             this.currentId = currentId;
         }
 
-        public String getPath()
-        {
-            return paths[currentId];
-        }
     }
 }

@@ -7,6 +7,7 @@ using NAudio;
 using NAudio.Wave;
 using System.Windows.Threading;
 using System.IO;
+using System.Reflection;
 
 namespace MP3Player
 {
@@ -28,19 +29,28 @@ namespace MP3Player
         }
         public void play(Library library, MainWindow mainWindow)
         {
+
             mainWindow.stopButton.IsEnabled = true;
             mainWindow.playButton.IsEnabled = false;
             waveOutDevice.Volume = (float)(mainWindow.volume.Value / 10);
-            audioFileReader = new AudioFileReader(library.getPath());
-            waveOutDevice.Init(audioFileReader);
-            waveOutDevice.Play();
-            mainWindow.pauseButton.IsEnabled = true;
-            mainWindow.pauseButton.Content = "Pause";
-            mainWindow.progressBar.Maximum = audioFileReader.Length;
-            mainWindow.muteButton.IsEnabled = true;
-            isFirstPlayed = true;
-            mainWindow.songs.SelectedIndex = library.getCurrentId();
-            update(library, mainWindow);
+
+            try
+            {
+
+                audioFileReader = new AudioFileReader(library.getSongs()[library.getCurrentId()].getPath());
+                 waveOutDevice.Init(audioFileReader);
+                waveOutDevice.Play();
+                mainWindow.pauseButton.IsEnabled = true;
+                mainWindow.pauseButton.Content = "Pause";
+                mainWindow.progressBar.Maximum = audioFileReader.Length;
+                mainWindow.muteButton.IsEnabled = true;
+                isFirstPlayed = true;
+                    update(library, mainWindow);
+            }
+            catch (System.ArgumentOutOfRangeException err)
+            {
+               
+            }
 
         }
         public void stop(MainWindow mainWindow)
@@ -48,7 +58,14 @@ namespace MP3Player
             mainWindow.stopButton.IsEnabled = false;
             mainWindow.playButton.IsEnabled = true;
             waveOutDevice.Stop();
-            audioFileReader.Dispose();
+            try
+            {
+                audioFileReader.Dispose();
+            }
+            catch(System.NullReferenceException  err)
+            {
+
+            }
             audioFileReader = null;
             mainWindow.muteButton.IsEnabled = false;
 
@@ -57,30 +74,34 @@ namespace MP3Player
         {
             while (true)
             {
-                if (audioFileReader.TotalTime.TotalSeconds <= audioFileReader.CurrentTime.TotalSeconds)
-                {
-                    Console.WriteLine(audioFileReader.TotalTime.TotalSeconds);
-                    mainWindow.progressBar.Value = 1;
-                    library.setCurrentId(library.getCurrentId() + 1);
-                    stop(mainWindow);
-                    break;
-                }
                 try
                 {
+                    if (audioFileReader.TotalTime.TotalSeconds <= audioFileReader.CurrentTime.TotalSeconds)
+                    {
+                        Console.WriteLine(audioFileReader.TotalTime.TotalSeconds);
+                        mainWindow.progressBar.Value = 1;
+                        library.setCurrentId(library.getCurrentId() + 1);
+                        stop(mainWindow);
+                        break;
+                    }
+                } 
+                catch(Exception err)
+                {
+
+                }
+
 
                     mainWindow.progressBar.Dispatcher.Invoke(() => mainWindow.progressBar.Value = audioFileReader.Position, DispatcherPriority.Background);
-                    String time;
-                    if (audioFileReader.CurrentTime.Seconds < 10)
-                        time = audioFileReader.CurrentTime.Minutes + " : 0" + audioFileReader.CurrentTime.Seconds;
-                    else
-                        time = audioFileReader.CurrentTime.Minutes + " : " + audioFileReader.CurrentTime.Seconds;
 
-                    mainWindow.progresLabel.Dispatcher.Invoke(() => mainWindow.progresLabel.Content = time, DispatcherPriority.Background);
-                }
-                catch (NullReferenceException e)
-                {
-                    Console.WriteLine(e.Message);
-                }
+                String time;
+                if (audioFileReader.CurrentTime.Seconds < 10)
+                    time = audioFileReader.CurrentTime.Minutes + " : 0" + audioFileReader.CurrentTime.Seconds;
+                else
+                    time = audioFileReader.CurrentTime.Minutes + " : " + audioFileReader.CurrentTime.Seconds;
+
+                mainWindow.progresLabel.Dispatcher.Invoke(() => mainWindow.progresLabel.Content = time, DispatcherPriority.Background);
+                
+
                 mainWindow.volumeLabel.Content = (int)(waveOutDevice.Volume * 100);
                 if (library.getCurrentId() == 0)
                     mainWindow.previousButton.IsEnabled = false;

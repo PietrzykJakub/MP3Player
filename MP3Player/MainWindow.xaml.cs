@@ -22,36 +22,54 @@ namespace MP3Player
     public partial class MainWindow : Window
     {
 
-        Library[] library;
+        private List<Library> library;
         Player player;
-        ShowInfo showInfo;
+        private ShowInfo showInfo;
+        int chosenLibrary;
         public MainWindow()
         {
-       
-
-            library = new Library[100];
+            chosenLibrary = 0;
+            library = new List<Library>();
             player = new Player();
             InitializeComponent();
-            showInfo = new ShowInfo(library,this);
+            showInfo = new ShowInfo();
 
         }
 
         private void play_Click(object sender, RoutedEventArgs e)
         {
-            player.play(library[0],this);
+            try
+            {
+                player.play(library[chosenLibrary], this);
+            }
+            catch(Exception err)
+            {
+
+            }
         }
 
         private void load_Click(object sender, RoutedEventArgs e)
         {
 
-            library[0] = new Library(destinationText.Text);
-            showInfo.setActualSongInfo(library[0], this);
-            showInfo.setSongsInfo(library[0], this);
+            try
+            {
+                library[chosenLibrary].load(destinationText.Text);
+            }
+            catch (System.ArgumentOutOfRangeException err)
+            {
+                library.Add(new Library("New Lib"));
+                Console.WriteLine(chosenLibrary);
+                library[chosenLibrary].load(destinationText.Text);
+            }
+            showInfo.updateAll(library,chosenLibrary,this);
+
+
         }
         
         private void stop_Click(object sender, RoutedEventArgs e)
         {
-            player.stop(this);       
+            stopButton.IsEnabled = false;
+            //player.stop(this);       
         }
 
         private void volume_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -72,8 +90,16 @@ namespace MP3Player
 
         private void progressBar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            player.progressBarChange(this, library[0]);
-            showInfo.setActualSongInfo(library[0], this);
+            try
+            {
+                player.progressBarChange(this, library[chosenLibrary]);
+                showInfo.setActualSongInfo(library[chosenLibrary], this);
+            }
+            catch(Exception)
+            {
+
+            }
+
         }
 
 
@@ -81,19 +107,27 @@ namespace MP3Player
         private void next_Click(object sender, RoutedEventArgs e)
         {
             player.stop(this);
-            library[0].setCurrentId(library[0].getCurrentId() + 1);
-            player.play(library[0],this);
+            try
+            {
+                library[chosenLibrary].setCurrentId(library[chosenLibrary].getCurrentId() + 1);
+                player.play(library[chosenLibrary], this);
+            }
+            catch(Exception err)
+            {
+
+            }
+
 
 
         }
 
         private void previous_Click(object sender, RoutedEventArgs e)
         {            
-            if(library[0].getCurrentId() > 0)
+            if(library[chosenLibrary].getCurrentId() > 0)
             {                
-                player.stop(this);
-                library[0].setCurrentId(library[0].getCurrentId() - 1);
-                player.play(library[0],this);
+                //player.stop(this);
+                library[chosenLibrary].setCurrentId(library[chosenLibrary].getCurrentId() - 1);
+                player.play(library[chosenLibrary],this);
             }
 
         }
@@ -105,11 +139,44 @@ namespace MP3Player
         private void songs_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
-            player.stop(this);
-            library[0].setCurrentId(songs.SelectedIndex);
-            player.play(library[0], this);
+            //player.stop(this);
+            library[chosenLibrary].setCurrentId(songs.SelectedIndex);
+            player.play(library[chosenLibrary], this);
             
         }
 
+        public ShowInfo getShowInfo()
+        {
+            return showInfo;
+        }
+
+        private void librarys_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+            if(librarys.SelectedIndex >= 0)
+            chosenLibrary = librarys.SelectedIndex;
+            Console.WriteLine(chosenLibrary);
+            
+            showInfo.updateAll(library, chosenLibrary, this);
+        }
+
+        private void addLibrary_Click(object sender, RoutedEventArgs e)
+        {
+            library.Add(new Library("New Lib " + library.Count));
+            chosenLibrary = library.Count-1;
+            Console.WriteLine(library.Count);
+            showInfo.updateAll(library, chosenLibrary, this);
+            //player.stop(this);
+ 
+            try
+            {
+                player.play(library[chosenLibrary], this);
+            }
+            catch (Exception err)
+            {
+            }
+        }
+
     }
+
 }

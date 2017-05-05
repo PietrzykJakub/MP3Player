@@ -15,43 +15,58 @@ namespace MP3Player
         List<SongInfo> songsInfo;
 
 
-        public ShowInfo(Library[] library, MainWindow main)
+        public ShowInfo()
         {
             songsInfo = new List<SongInfo>();
 
         }
-        public void setActualSongInfo(Library library, MainWindow main)
+        public void updateAll(List<Library> library, int chosenLibrary,MainWindow mainWindow)
         {
-            TagLib.File info = TagLib.File.Create(library.getPaths()[library.getCurrentId()]);
-            main.song.Content = info.Tag.Title +  " - " + info.Tag.FirstAlbumArtist;
-            TagLib.IPicture pic = info.Tag.Pictures[0];
-            MemoryStream ms = new MemoryStream(pic.Data.Data);
+            try
+            {
+                setActualSongInfo(library[chosenLibrary], mainWindow);
+                setSongsInfo(library[chosenLibrary], mainWindow);
+                setLibraryInfo(library, mainWindow);
+            }
+            catch(System.ArgumentOutOfRangeException err)
+            {
+
+            }
+
+        }
+        public void setActualSongInfo(Library library, MainWindow mainWindow)
+        {
+
+            try
+            {
+                mainWindow.song.Content = library.getSongs()[library.getCurrentId()].title +  " - " + library.getSongs()[library.getCurrentId()].artist;
+            MemoryStream ms = new MemoryStream(library.getSongs()[library.getCurrentId()].picture.Data.Data);
             ms.Seek(0, SeekOrigin.Begin);
             BitmapImage bitmap = new BitmapImage();
             bitmap.BeginInit();
             bitmap.StreamSource = ms;
             bitmap.EndInit();
-            main.cover.Source = bitmap;
+            mainWindow.cover.Source = bitmap;
 
-        }
-        public void setSongsInfo(Library library, MainWindow main)
-        {
-            for (int i = 0; i < library.getPaths().Length; i++)
-            {
-                if (library.getPaths()[i] != null)
-                {
-                    TagLib.File info = TagLib.File.Create(library.getPaths()[i]);
-                    String time;
-                    if (info.Properties.Duration.Seconds < 10)
-                        time = (info.Properties.Duration.Minutes.ToString() + ":0" + info.Properties.Duration.Seconds.ToString());
-                    else
-                        time = (info.Properties.Duration.Minutes.ToString() + ":" + info.Properties.Duration.Seconds.ToString());
-
-                    songsInfo.Add(new SongInfo(info.Tag.Title, info.Tag.Album, info.Tag.FirstAlbumArtist, info.Tag.Year.ToString(),time ));
-                }
             }
-            main.songs.ItemsSource = null;
-            main.songs.ItemsSource = songsInfo;
+            catch(System.ArgumentOutOfRangeException err)
+            {
+
+            }
+
+}
+        public void setSongsInfo(Library library, MainWindow mainWindow)
+        {
+
+            mainWindow.songs.ItemsSource = null;
+            mainWindow.songs.ItemsSource = library.getSongs();
         }
+        public void setLibraryInfo( List<Library> library, MainWindow mainWindow)
+        {
+
+            mainWindow.librarys.ItemsSource = null;
+            mainWindow.librarys.ItemsSource = library;
+        }
+
     }
 }

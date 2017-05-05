@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MP3Player
 {
-    class SongInfo
+    public class SongInfo
     {
         public string title { get; set; }
 
@@ -18,15 +18,39 @@ namespace MP3Player
 
         public string time { get; set; }
 
-        public SongInfo(String title, String album, String artist, String year, String time)
-        {
-            this.title = title;
-            this.album = album;
-            this.artist = artist;
-            this.year = year;
-            this.time = time;
+        public TagLib.IPicture picture { get; set; }
 
+        private string path;
+
+        TagLib.File info;
+
+        public SongInfo(String path)
+        {
+            this.path = path;
+
+            info = TagLib.File.Create(path);
+
+            if (info.Properties.Duration.Seconds < 10)
+                time = (info.Properties.Duration.Minutes.ToString() + ":0" + info.Properties.Duration.Seconds.ToString());
+            else
+                time = (info.Properties.Duration.Minutes.ToString() + ":" + info.Properties.Duration.Seconds.ToString());
+
+            this.title = info.Tag.Title;
+            this.album = info.Tag.Album;
+            this.artist = info.Tag.FirstAlbumArtist;
+            this.year = info.Tag.Year.ToString();
+            this.time = time;
+            this.picture = info.Tag.Pictures[0];
         }
+        public String getPath()
+        {
+            return path;
+        }
+        public string getTitle()
+        {
+            return title;
+        }
+        
 
     }
 }
