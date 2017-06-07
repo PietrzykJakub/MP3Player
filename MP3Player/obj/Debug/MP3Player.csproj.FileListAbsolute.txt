@@ -49,3 +49,6 @@ C:\Users\Krzysiek\Desktop\MP3_Player\MP3Player\obj\Debug\MP3Player.pdb
 C:\Users\Kuba\Documents\Visual Studio 2017\Projects\MP3_Player\MP3Player\bin\Debug\policy.2.0.taglib-sharp.dll
 C:\Users\Kuba\Documents\Visual Studio 2017\Projects\MP3_Player\MP3Player\bin\Debug\taglib-sharp.dll
 C:\Users\Kuba\Documents\Visual Studio 2017\Projects\MP3_Player\MP3Player\bin\Debug\policy.2.0.taglib-sharp.config
+C:\Users\Krzysiek\Desktop\MP3_Player\MP3Player\bin\Debug\policy.2.0.taglib-sharp.dll
+C:\Users\Krzysiek\Desktop\MP3_Player\MP3Player\bin\Debug\taglib-sharp.dll
+C:\Users\Krzysiek\Desktop\MP3_Player\MP3Player\bin\Debug\policy.2.0.taglib-sharp.config

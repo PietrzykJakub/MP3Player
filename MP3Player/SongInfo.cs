@@ -40,7 +40,11 @@ namespace MP3Player
             this.artist = info.Tag.FirstAlbumArtist;
             this.year = info.Tag.Year.ToString();
             this.time = time;
-            this.picture = info.Tag.Pictures[0];
+            try
+            {
+                this.picture = info.Tag.Pictures[0];
+            }
+            catch (Exception err) { }
         }
         public String getPath()
         {

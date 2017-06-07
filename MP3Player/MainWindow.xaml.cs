@@ -16,6 +16,7 @@ using NAudio;
 using NAudio.Wave;
 using System.Windows.Threading;
 using System.IO;
+using System.Threading;
 
 namespace MP3Player
 {
@@ -23,13 +24,15 @@ namespace MP3Player
     {
 
         private List<Library> library;
-        Player player;
+        public Player player;
         private ShowInfo showInfo;
         int chosenLibrary;
+
         public MainWindow()
         {
             chosenLibrary = 0;
             library = new List<Library>();
+            library.Add(new Library("New Lib"));
             player = new Player();
             InitializeComponent();
             showInfo = new ShowInfo();
@@ -38,6 +41,7 @@ namespace MP3Player
 
         private void play_Click(object sender, RoutedEventArgs e)
         {
+
             try
             {
                 player.play(library[chosenLibrary], this);
@@ -69,7 +73,7 @@ namespace MP3Player
         private void stop_Click(object sender, RoutedEventArgs e)
         {
             stopButton.IsEnabled = false;
-            //player.stop(this);       
+            player.stop(this);       
         }
 
         private void volume_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -125,7 +129,7 @@ namespace MP3Player
         {            
             if(library[chosenLibrary].getCurrentId() > 0)
             {                
-                //player.stop(this);
+                player.stop(this);
                 library[chosenLibrary].setCurrentId(library[chosenLibrary].getCurrentId() - 1);
                 player.play(library[chosenLibrary],this);
             }
@@ -139,7 +143,7 @@ namespace MP3Player
         private void songs_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
-            //player.stop(this);
+            player.stop(this);
             library[chosenLibrary].setCurrentId(songs.SelectedIndex);
             player.play(library[chosenLibrary], this);
             
@@ -166,7 +170,7 @@ namespace MP3Player
             chosenLibrary = library.Count-1;
             Console.WriteLine(library.Count);
             showInfo.updateAll(library, chosenLibrary, this);
-            //player.stop(this);
+            player.stop(this);
  
             try
             {

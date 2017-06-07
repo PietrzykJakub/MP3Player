@@ -54,7 +54,6 @@ namespace MP3Player
 
         public void setCurrentId(int currentId)
         {
-            Console.Write("set:" + currentId);
             this.currentId = currentId;
         }
 

@@ -40,16 +40,16 @@ namespace MP3Player
             try
             {
                 mainWindow.song.Content = library.getSongs()[library.getCurrentId()].title +  " - " + library.getSongs()[library.getCurrentId()].artist;
-            MemoryStream ms = new MemoryStream(library.getSongs()[library.getCurrentId()].picture.Data.Data);
-            ms.Seek(0, SeekOrigin.Begin);
-            BitmapImage bitmap = new BitmapImage();
-            bitmap.BeginInit();
-            bitmap.StreamSource = ms;
-            bitmap.EndInit();
-            mainWindow.cover.Source = bitmap;
+                MemoryStream ms = new MemoryStream(library.getSongs()[library.getCurrentId()].picture.Data.Data);
+                ms.Seek(0, SeekOrigin.Begin);
+                BitmapImage bitmap = new BitmapImage();
+                bitmap.BeginInit();
+                bitmap.StreamSource = ms;
+                bitmap.EndInit();
+                mainWindow.cover.Source = bitmap;
 
             }
-            catch(System.ArgumentOutOfRangeException err)
+            catch(Exception err)
             {
 
             }
@@ -57,13 +57,11 @@ namespace MP3Player
 }
         public void setSongsInfo(Library library, MainWindow mainWindow)
         {
-
             mainWindow.songs.ItemsSource = null;
             mainWindow.songs.ItemsSource = library.getSongs();
         }
         public void setLibraryInfo( List<Library> library, MainWindow mainWindow)
         {
-
             mainWindow.librarys.ItemsSource = null;
             mainWindow.librarys.ItemsSource = library;
         }
